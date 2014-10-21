@@ -3,12 +3,6 @@
 #include "nmmatrix.h"
 #include <QVector3D>
 
-/*
-	x = A * t * cos(t)
-	y = A * t * sin(t)
-	z = D - (x^2 + y^2)
-*/
-
 const int R = 5;
 const int r = 3;
 
