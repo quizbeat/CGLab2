@@ -9,8 +9,8 @@
 	z = D - (x^2 + y^2)
 */
 
-const int R = 2;
-const int r = 5;
+const int R = 5;
+const int r = 3;
 
 Widget::Widget(QWidget *parent):QWidget(parent), ui(new Ui::Widget) {
     lastX = 0;
@@ -61,8 +61,8 @@ void Widget::paintEvent(QPaintEvent *) {
         for (float psi = 0; psi < 2 * M_PI; psi += d) {
             points.push_back(ResMatrix * torusPoint(phi, psi));
             points.push_back(ResMatrix * torusPoint(phi + d, psi));
-            points.push_back(ResMatrix * torusPoint(phi, psi + d));
             points.push_back(ResMatrix * torusPoint(phi + d, psi + d));
+            points.push_back(ResMatrix * torusPoint(phi, psi + d));
         }
     }
     int size = points.size();
