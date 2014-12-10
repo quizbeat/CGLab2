@@ -2,6 +2,7 @@
 #include "ui_widget.h"
 #include "nmmatrix.h"
 #include <QVector3D>
+#include <ctime>
 
 const int R = 5;
 const int r = 3;
@@ -51,6 +52,7 @@ void Widget::paintEvent(QPaintEvent *) {
     ResMatrix = XZMatrix * YZMatrix * SMatrix;
 
     float d = M_PI / 30;
+
     for (float phi = 0; phi < 2 * M_PI; phi += d) {
         for (float psi = 0; psi < 2 * M_PI; psi += d) {
             points.push_back(ResMatrix * torusPoint(phi, psi));
@@ -63,10 +65,13 @@ void Widget::paintEvent(QPaintEvent *) {
     points.push_back(points[0]);
     points.push_back(points[1]);
     for (int i = 0; i < size; i += 4) {
+
         QVector3D vec1 = trans(points[i + 1]) - trans(points[i]);
         QVector3D vec2 = trans(points[i + 2]) - trans(points[i]);
         QVector3D n    = QVector3D::crossProduct(vec1, vec2);
+
         if (QVector3D::dotProduct(n, QVector3D(0, 0, -1)) >= 0) continue;
+
         painter.drawLine(points[i].x + w, points[i].y + h, points[i + 1].x + w, points[i + 1].y + h);
         painter.drawLine(points[i + 1].x + w, points[i + 1].y + h, points[i + 2].x + w, points[i + 2].y + h);
         painter.drawLine(points[i + 2].x + w, points[i + 2].y + h, points[i + 3].x + w, points[i + 3].y + h);
