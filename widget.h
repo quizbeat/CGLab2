@@ -8,6 +8,8 @@
 #include <QMouseEvent>
 #include <cmath>
 
+using namespace std;
+
 namespace Ui {
 	class Widget;
 }
@@ -16,24 +18,39 @@ class Widget : public QWidget {
     Q_OBJECT
 
 public:
+    /* Mouse moves properties */
     float lastX, lastY;
     float alpha, beta;
+
+    /* Prism propertes */
+    int   prismN;
+    float prismR, prismH;
+
+    /* Pyramid properties */
+    float pyramidR, pyramidH;
+
+    /* Common attributes */
     explicit Widget(QWidget *parent = 0);
     virtual void paintEvent(QPaintEvent *);
     virtual void mousePressEvent(QMouseEvent *mEvent);
     virtual void mouseMoveEvent(QMouseEvent *mEvent);
     ~Widget();
 
+    int selectedFigure;
+
+    typedef enum {
+        PRISM,
+        PYRAMID
+    }figure;
+
 private slots:
     void on_quitButton_clicked();
-    void on_changeParamK_valueChanged();
-    void on_changeParamA_valueChanged();
-    void on_changeParamD_valueChanged();
-    void on_changeParamDb_valueChanged();
-    void on_changeXY_valueChanged();
-    void on_changeXZ_valueChanged();
-    void on_changeYZ_valueChanged();
-    void on_checkBox_clicked();
+    void on_prismNParameter_valueChanged(int newValue);
+    void on_prismRParameter_valueChanged(double newValue);
+    void on_prismHParameter_valueChanged(double newValue);
+    void on_pyramidRParameter_valueChanged(double newValue);
+    void on_pyramidHParameter_valueChanged(double newValue);
+    void on_tabWidget_currentChanged(int index);
 
 private:
     Ui::Widget *ui;

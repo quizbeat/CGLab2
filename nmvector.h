@@ -12,8 +12,8 @@ public:
     NMVector operator-(const NMVector &v);
     void operator=(const NMVector &v);
 
-    NMVector crossProduct(const NMVector &v1, const NMVector &v2);
-    float dotProduct(const NMVector &v2, const NMVector &v2);
+    static NMVector crossProduct(const NMVector &v1, const NMVector &v2);
+    static float dotProduct(const NMVector &v1, const NMVector &v2);
 };
 
 #endif // NMVECTOR_H

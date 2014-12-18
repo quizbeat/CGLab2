@@ -13,28 +13,28 @@ NMMatrix::NMMatrix(float arg[4][4]) {
             a[i][j] = arg[i][j];
 }
 
-void NMMatrix::RotateXY(float alpha) {
+void NMMatrix::rotateXY(float alpha) {
     a[0][0] = cos(alpha);
     a[0][1] = -sin(alpha);
     a[1][0] = sin(alpha);
     a[1][1] = cos(alpha);
 }
 
-void NMMatrix::RotateXZ(float alpha) {
+void NMMatrix::rotateXZ(float alpha) {
     a[0][0] = cos(alpha);
     a[0][2] = sin(alpha);
     a[2][0] = -sin(alpha);
     a[2][2] = cos(alpha);
 }
 
-void NMMatrix::RotateYZ(float alpha) {
+void NMMatrix::rotateYZ(float alpha) {
     a[1][1] = cos(alpha);
     a[1][2] = -sin(alpha);
     a[2][1] = sin(alpha);
     a[2][2] = cos(alpha);
 }
 
-void NMMatrix::SetScale(float scale) {
+void NMMatrix::setScale(float scale) {
     a[0][0] = scale;
     a[1][1] = scale;
     a[2][2] = scale;

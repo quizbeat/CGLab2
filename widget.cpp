@@ -1,17 +1,24 @@
 #include "widget.h"
 #include "ui_widget.h"
 #include "nmmatrix.h"
-#include <QVector3D>
 #include <ctime>
 
-const int R = 5;
-const int r = 3;
-
+/* Init properties */
 Widget::Widget(QWidget *parent):QWidget(parent), ui(new Ui::Widget) {
     lastX = 0;
     lastY = 0;
     alpha = 0;
     beta  = 0;
+
+    prismN = 3;
+    prismR = 4;
+    prismH = 4;
+
+    pyramidR = 4;
+    pyramidH = 4;
+
+    selectedFigure = PRISM;
+
     ui->setupUi(this);
 }
 
@@ -19,15 +26,20 @@ Widget::~Widget() {
     delete ui;
 }
 
-NMVector torusPoint(float phi, float psi) {
-    return NMVector((R + r * cos(phi)) * cos(psi),
-                    (R + r * cos(phi)) * sin(psi),
-                     r * sin(phi),
-                     0);
+NMVector prismPoint(double phi, double prismR, double prismH) {
+    NMVector result = NMVector();
+    result.x = prismR * cos(phi);
+    result.y = prismR * sin(phi);
+    result.z = prismH;
+    return result;
 }
 
-QVector3D trans(NMVector &v) {
-    return QVector3D(v.x, v.y, v.z);
+NMVector pyramidPoint(double phi, double pyramidR, double pyramidH) {
+    NMVector result = NMVector();
+    result.x = pyramidR * cos(phi);
+    result.y = pyramidR * sin(phi);
+    result.z = pyramidH;
+    return result;
 }
 
 void Widget::paintEvent(QPaintEvent *) {
@@ -36,58 +48,30 @@ void Widget::paintEvent(QPaintEvent *) {
     painter.setRenderHint(QPainter::Antialiasing, true);
 
     QVector<NMVector> points;
+
     float scale = 0.05 * std::min(width(), height());
     float w  = width() / 2.0;
     float h = height() / 2.0;
+
+    if(1 == 2) {
+        painter.drawLine(w, h, (2 * w - 20), h);
+        painter.drawLine(w, h, 20, height() - h / 8);
+        painter.drawLine(w, h, w, 60);
+    }
+
+
 
     NMMatrix XZMatrix = NMMatrix();
     NMMatrix YZMatrix = NMMatrix();
     NMMatrix SMatrix  = NMMatrix();
     NMMatrix ResMatrix = NMMatrix();
 
-    XZMatrix.RotateXZ(beta);
-    YZMatrix.RotateYZ(alpha);
-    SMatrix.SetScale(scale);
+    XZMatrix.rotateXZ(beta);
+    YZMatrix.rotateYZ(alpha);
+    SMatrix.setScale(scale);
 
     ResMatrix = XZMatrix * YZMatrix * SMatrix;
-
-    float d = M_PI / 30;
-
-    for (float phi = 0; phi < 2 * M_PI; phi += d) {
-        for (float psi = 0; psi < 2 * M_PI; psi += d) {
-            points.push_back(ResMatrix * torusPoint(phi, psi));
-            points.push_back(ResMatrix * torusPoint(phi + d, psi));
-            points.push_back(ResMatrix * torusPoint(phi + d, psi + d));
-            points.push_back(ResMatrix * torusPoint(phi, psi + d));
-        }
-    }
-    int size = points.size();
-    points.push_back(points[0]);
-    points.push_back(points[1]);
-    for (int i = 0; i < size; i += 4) {
-
-        QVector3D vec1 = trans(points[i + 1]) - trans(points[i]);
-        QVector3D vec2 = trans(points[i + 2]) - trans(points[i]);
-        QVector3D n    = QVector3D::crossProduct(vec1, vec2);
-
-        if (QVector3D::dotProduct(n, QVector3D(0, 0, -1)) >= 0) continue;
-
-        painter.drawLine(points[i].x + w, points[i].y + h, points[i + 1].x + w, points[i + 1].y + h);
-        painter.drawLine(points[i + 1].x + w, points[i + 1].y + h, points[i + 2].x + w, points[i + 2].y + h);
-        painter.drawLine(points[i + 2].x + w, points[i + 2].y + h, points[i + 3].x + w, points[i + 3].y + h);
-        painter.drawLine(points[i + 3].x + w, points[i + 3].y + h, points[i].x + w, points[i].y + h);
-    }
 }
-
-void Widget::on_quitButton_clicked()         { close();  }
-void Widget::on_changeParamA_valueChanged()  { update(); }
-void Widget::on_changeParamD_valueChanged()  { update(); }
-void Widget::on_changeParamK_valueChanged()  { update(); }
-void Widget::on_changeParamDb_valueChanged() { update(); }
-void Widget::on_changeXY_valueChanged()      { update(); }
-void Widget::on_changeXZ_valueChanged()      { update(); }
-void Widget::on_changeYZ_valueChanged()      { update(); }
-void Widget::on_checkBox_clicked()           { update(); }
 
 void Widget::mousePressEvent(QMouseEvent *mEvent) {
     lastX = mEvent->x();
@@ -99,5 +83,47 @@ void Widget::mouseMoveEvent(QMouseEvent *mEvent) {
     alpha += (mEvent->y() - lastY) / 111;
     lastX = mEvent->x();
     lastY = mEvent->y();
+    update();
+}
+
+void Widget::on_quitButton_clicked() {
+    close();
+}
+
+void Widget::on_prismNParameter_valueChanged(int newValue) {
+    prismN = newValue;
+    update();
+}
+
+void Widget::on_prismRParameter_valueChanged(double newValue) {
+    prismR = newValue;
+    update();
+}
+
+void Widget::on_prismHParameter_valueChanged(double newValue) {
+    prismH = newValue;
+    update();
+}
+
+void Widget::on_pyramidRParameter_valueChanged(double newValue) {
+    pyramidR = newValue;
+    update();
+}
+
+void Widget::on_pyramidHParameter_valueChanged(double newValue) {
+    pyramidH = newValue;
+    update();
+}
+
+void Widget::on_tabWidget_currentChanged(int index) {
+    if (index == 0) {
+        selectedFigure = PRISM;
+    }
+    else if (index == 1) {
+        selectedFigure = PYRAMID;
+    }
+    else {
+        qDebug() << "Figure selection error." << endl;
+    }
     update();
 }
