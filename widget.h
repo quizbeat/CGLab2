@@ -8,8 +8,6 @@
 #include <QMouseEvent>
 #include <cmath>
 
-using namespace std;
-
 namespace Ui {
 	class Widget;
 }

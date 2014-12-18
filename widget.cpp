@@ -44,33 +44,127 @@ NMVector pyramidPoint(double phi, double pyramidR, double pyramidH) {
 
 void Widget::paintEvent(QPaintEvent *) {
 
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-
-    QVector<NMVector> points;
-
-    float scale = 0.05 * std::min(width(), height());
-    float w  = width() / 2.0;
-    float h = height() / 2.0;
-
-    if(1 == 2) {
-        painter.drawLine(w, h, (2 * w - 20), h);
-        painter.drawLine(w, h, 20, height() - h / 8);
-        painter.drawLine(w, h, w, 60);
+    double max;
+    if (selectedFigure == PRISM) {
+        max = std::max(1.5 * prismH,
+                       1.5 * prismR);
+    }
+    else {
+        max = std::max(1.5 * pyramidH,
+                       1.5 * pyramidR);
     }
 
+    double scale = std::min(height() / (2 * max),
+                            width() / (2 * max));
 
+    QPainter painter(this);
+    QVector <NMVector> points;
+
+    NMMatrix scaleMatrix = NMMatrix();
+    NMMatrix resMatrix   = NMMatrix();
+
+    /* Screen center */
+    NMVector centerPoint = NMVector(width() / 2.0,
+                                   height() / 2.0 + 30, 
+                                   1, 
+                                   1);
+
+    NMVector normal   = NMVector();
+    NMVector camPoint = NMVector(0, 0, -1, 1);
+
+    painter.setRenderHint(QPainter::Antialiasing, true);
 
     NMMatrix XZMatrix = NMMatrix();
     NMMatrix YZMatrix = NMMatrix();
-    NMMatrix SMatrix  = NMMatrix();
-    NMMatrix ResMatrix = NMMatrix();
 
     XZMatrix.rotateXZ(beta);
     YZMatrix.rotateYZ(alpha);
-    SMatrix.setScale(scale);
+    scaleMatrix.setScale(scale);
 
-    ResMatrix = XZMatrix * YZMatrix * SMatrix;
+    resMatrix = XZMatrix * YZMatrix;
+
+    bool bottom = false;
+    bool top = false;
+
+    if (selectedFigure == PRISM) {
+        
+        double step = 2 * M_PI / prismN;
+        for (double phi = 0; phi < 2 * M_PI; phi += step) {
+             points.push_back(prismPoint(phi, prismR, -prismH / 2));
+             points.push_back(prismPoint(phi + step, prismR, -prismH / 2));
+             points.push_back(prismPoint(phi + step, prismR, prismH / 2));
+             points.push_back(prismPoint(phi, prismR, prismH / 2));
+        }
+
+        int size = points.size();
+        for (int i = 0; i < size; i++) {
+           points[i] = scaleMatrix * points[i];
+           points[i] = resMatrix * points[i];
+           points[i] = points[i] + centerPoint;
+        }
+
+        normal = NMVector::crossProduct(points[5] - points[4], points[1] - points[0]);
+        if (NMVector::dotProduct(normal, camPoint) >= 0) {
+            bottom = true;
+        }
+
+        normal = NMVector::crossProduct(points[3] - points[2], points[7] - points[6]);
+        if (NMVector::dotProduct(normal, camPoint) >= 0) {
+            top = true;
+        }
+
+        for (int i = 0; i < size; i += 4) {
+
+            normal = NMVector::crossProduct(points[i + 1] - points[i],
+                                       points[i + 3] - points[i]);
+            if (NMVector::dotProduct(normal, camPoint) >= 0) {
+                painter.drawLine(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
+                painter.drawLine(points[i + 1].x, points[i + 1].y, points[i + 2].x, points[i + 2].y);
+                painter.drawLine(points[i + 2].x, points[i + 2].y, points[i + 3].x, points[i + 3].y);
+                painter.drawLine(points[i + 3].x, points[i + 3].y, points[i].x, points[i].y);
+            }
+
+            if (bottom) {
+                painter.drawLine(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
+            }
+            if (top) {
+                painter.drawLine(points[i + 2].x, points[i + 2].y, points[i + 3].x, points[i + 3].y);
+            }
+        }
+    }
+
+    else if (selectedFigure == PYRAMID) {
+
+        double step = 2 * M_PI / 6;
+        for(double phi = 0; phi < 2 * M_PI; phi += step) {
+              points.push_back(pyramidPoint(phi, pyramidR, -pyramidH / 2));
+              points.push_back(pyramidPoint(phi + step, pyramidR, -pyramidH / 2));
+              points.push_back(pyramidPoint(phi + step / 2, 0, pyramidH / 2));
+         }
+
+        for(double phi = 0; phi < 2 * M_PI; phi += step) {
+              points.push_back(pyramidPoint(phi + step, pyramidR, -pyramidH / 2));
+              points.push_back(pyramidPoint(phi, pyramidR, -pyramidH / 2));
+              points.push_back(pyramidPoint(phi + step / 2, 0, -pyramidH / 2));
+         }
+
+        int size = points.size();
+        for (int i = 0; i < size; i++) {
+            points[i] = scaleMatrix * points[i];
+            points[i] = resMatrix * points[i];
+            points[i] = points[i] + centerPoint;
+        }
+        for (int i = 0; i < size; i += 3) {
+            normal = NMVector::crossProduct(points[i + 1] - points[i],
+                                  points[i + 2] - points[i]);
+
+            if(NMVector::dotProduct(normal, camPoint) >= 0) {
+                painter.drawLine(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
+                painter.drawLine(points[i + 1].x, points[i + 1].y, points[i + 2].x, points[i + 2].y);
+                painter.drawLine(points[i + 2].x, points[i + 2].y, points[i].x, points[i].y);
+            }
+        }
+    }
 }
 
 void Widget::mousePressEvent(QMouseEvent *mEvent) {

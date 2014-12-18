@@ -60,6 +60,12 @@
            <height>24</height>
           </rect>
          </property>
+         <property name="minimum">
+          <number>3</number>
+         </property>
+         <property name="value">
+          <number>3</number>
+         </property>
         </widget>
         <widget class="QDoubleSpinBox" name="prismRParameter">
          <property name="geometry">
@@ -70,6 +76,9 @@
            <height>24</height>
           </rect>
          </property>
+         <property name="value">
+          <double>4.000000000000000</double>
+         </property>
         </widget>
         <widget class="QDoubleSpinBox" name="prismHParameter">
          <property name="geometry">
@@ -79,6 +88,9 @@
            <width>71</width>
            <height>24</height>
           </rect>
+         </property>
+         <property name="value">
+          <double>4.000000000000000</double>
          </property>
         </widget>
         <widget class="QLabel" name="prismNLabel">
@@ -159,6 +171,12 @@
            <height>24</height>
           </rect>
          </property>
+         <property name="minimum">
+          <double>1.000000000000000</double>
+         </property>
+         <property name="value">
+          <double>4.000000000000000</double>
+         </property>
         </widget>
         <widget class="QDoubleSpinBox" name="pyramidRParameter">
          <property name="geometry">
@@ -168,6 +186,12 @@
            <width>71</width>
            <height>24</height>
           </rect>
+         </property>
+         <property name="minimum">
+          <double>1.000000000000000</double>
+         </property>
+         <property name="value">
+          <double>4.000000000000000</double>
          </property>
         </widget>
         <widget class="QLabel" name="pyramidRLabel">
