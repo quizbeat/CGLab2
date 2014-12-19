@@ -35,6 +35,7 @@ public:
     ~Widget();
 
     int selectedFigure;
+    bool showAxis;
 
     typedef enum {
         PRISM,
@@ -49,6 +50,7 @@ private slots:
     void on_pyramidRParameter_valueChanged(double newValue);
     void on_pyramidHParameter_valueChanged(double newValue);
     void on_tabWidget_currentChanged(int index);
+    void on_showAxis_toggled(bool checked);
 
 private:
     Ui::Widget *ui;

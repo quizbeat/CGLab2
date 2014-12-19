@@ -16,26 +16,6 @@
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="1" column="0">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="quitButton">
-       <property name="text">
-        <string>Quit</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="1">
       <widget class="QTabWidget" name="tabWidget">
        <property name="maximumSize">
@@ -45,7 +25,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="prism">
         <attribute name="title">
@@ -211,6 +191,33 @@
          </property>
         </widget>
        </widget>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QPushButton" name="quitButton">
+       <property name="text">
+        <string>Quit</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="1" column="1">
+      <widget class="QCheckBox" name="showAxis">
+       <property name="text">
+        <string>Show axis</string>
+       </property>
       </widget>
      </item>
     </layout>

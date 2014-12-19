@@ -58,7 +58,7 @@ void Widget::paintEvent(QPaintEvent *) {
                             width() / (2 * max));
 
     QPainter painter(this);
-    QVector <NMVector> points;
+    QVector<NMVector> points;
 
     NMMatrix scaleMatrix = NMMatrix();
     NMMatrix resMatrix   = NMMatrix();
@@ -165,6 +165,27 @@ void Widget::paintEvent(QPaintEvent *) {
             }
         }
     }
+
+    /* Draw axis */
+    if (showAxis) {
+        QVector<NMVector> axis;
+        axis.push_back(NMVector(0, 0, 0, 1));
+        axis.push_back(NMVector(10, 0, 0, 1));
+        axis.push_back(NMVector(0, 10, 0, 1));
+        axis.push_back(NMVector(0, 0, 10, 1));
+
+        axis[0] = axis[0] + centerPoint;
+
+        for (int i = 1; i < 4; i++) {
+           axis[i] = scaleMatrix * axis[i];
+           axis[i] = resMatrix * axis[i];
+           axis[i] = axis[i] + centerPoint;
+        }
+
+        painter.drawLine(axis[0].x, axis[0].y, axis[1].x, axis[1].y);
+        painter.drawLine(axis[0].x, axis[0].y, axis[2].x, axis[2].y);
+        painter.drawLine(axis[0].x, axis[0].y, axis[3].x, axis[3].y);
+    }
 }
 
 void Widget::mousePressEvent(QMouseEvent *mEvent) {
@@ -218,6 +239,16 @@ void Widget::on_tabWidget_currentChanged(int index) {
     }
     else {
         qDebug() << "Figure selection error." << endl;
+    }
+    update();
+}
+
+void Widget::on_showAxis_toggled(bool checked) {
+    if (checked) {
+        showAxis = true;
+    }
+    else {
+        showAxis = false;
     }
     update();
 }
